@@ -1,0 +1,59 @@
+Fidel Briones
+Greg Redozubov
+Assignment 9
+
+Question 1: Page 387 CYU#20
+Discuss the tradeoffs between pointers and recursive types that arise natuarally in a language with a reference model of variables?
+- With recursive types, it may be the case that 2 types are mutually recursive. In some cases where types and names must be declared, it may end up that one type is unable to refer to the other. However, using pointers can risk memory leaks or dangling references. In the case that a language employs some sort of garbadge collection, there may be some performance overhead associated with that as well.
+Source: PLP
+
+Question 2: Page 388 CYU#22
+What is the difference between a pointer and an address? Between a pointer and a reference?
+- An address refers to where an object is stored in memory. While a pointer may be the same thing, a pointer can also be represented as a segment ID and an offset (in a machine with segmented memory), and the representation depends on the machine or language requirements. A reference is simply just an alias to an object, and so while it may be an address, this does not always have to be the case.
+Source: PLP
+
+Question 3: Page 405 Exercise 8.12
+Consider the following C declaration, compiled on a 64-bit x86 machine:
+struct{
+	int n;
+	char c;
+} A[10][10]
+If the address of A[0][0] is 1000 (decimal), what is the address of A[3][7]?
+- Accounting for padding, the size of this struct would be 8 bytes. Thus, in A[3][7], there would be an offset of 3*10*8 + 7*8 = 240 + 56 = 296. Thus the address of A[3][7] would be 1296.
+
+Question 4: Page 421 CYU#8, 9, 11
+8) If work can be done in either the caller or the callee, why do we typically prefer
+to do it in the callee?
+- We prefer the callee to take on the work since these tasks will only appear once in the target program and subroutines are often called in more than one place. Thus, having the callee take on this work often saves space.
+9) Why do compilers typically allocate space for arguments in the stack, even
+when they pass them in registers?
+- Compilers allocate space for arguments on the stack because a nester routine may need a standardized place to reach them via the static chain
+11) How does an in-line subroutine differ from a macro?
+- Inline functions are typically expanded at the time of compilation. Macros, on the other hand, are expanded by the preprocessor 
+Source: PLP
+
+Question 5: Page 465 Exercise 9.15
+Consider the following declaration in C:
+	double(*foo(double (*)(double, double[]), double)) (double, ...);
+Describe in English the type of foo
+- Foo is a function returning a pointer to another function which takes an undefined amount of arguments, with the first of which being a double, and this returned function returns a double. Foo takes, as a parameter, another function. This inner function returns a double, and takes a double and a pointer to a double as parameters.
+Source: http://unixwiz.net/techtips/reading-cdecl.html
+
+Question 6: 
+Suppose this C++ code
+
+	const int k = ???; // you need to figure out the value of ???
+	int * i = 0;
+	struct A {
+    	int x[k];
+	};
+	A* a = 0;
+	printf( "%d  %d  %d %d  %d  %d  ",
+         i+1, i+k, k, a+k, &(a[9]), &(a[9]) - (a+1)  );
+
+outputs the values for the first two expressions
+     4  8
+What are its remaining outputs?  Briefly explain how the output is obtained.  (Hint: pay attention to coercion.)
+- Since i is of type int *, and the size of an int is 4 bytes, i + 1 increments i to the next int (0x0 -> 0x4). Thus, i + 1 prints 4. Also, this must mean that k = 2 for i + k to print 8. Thus, the third output is 2. Since A is a struct of size int * 2, sizeof(A) = 8. Incrementing a by 2 means a+k = 0 + 2*8, meaning the fourth ouput is 16. The fifth returns the address of a offset by 9*8, thus &(a[9]) prints out 72. The last output is subtracting the address of the 9th instance of A by 8 (instances of A), so it is just the sizeof(A), which is 8.
+Output = 4 8 2 16 72 8
+
